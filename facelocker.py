@@ -1,13 +1,16 @@
 import cv2
 import time
 import argparse
+import ctypes
+import platform
 
-from ctypes import CDLL
 
-
-def lock_screen_macos():
-    login = CDLL('/System/Library/PrivateFrameworks/login.framework/Versions/Current/login')
-    login.SACLockScreenImmediate()
+def lock_screen(platform_name):
+    if platform_name == 'Darwin':
+        login = ctypes.CDLL('/System/Library/PrivateFrameworks/login.framework/Versions/Current/login')
+        login.SACLockScreenImmediate()
+    elif platform_name == 'Windows':
+        ctypes.windll.user32.LockWorkStation()
 
 
 def face_recognized(cap, face_cascade) -> bool:
@@ -25,6 +28,7 @@ def main(time_interval):
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
     time_counter = 0
+    platform_name = platform.system()
 
     print('Looking for faces...'.format(time_interval))
 
@@ -39,7 +43,7 @@ def main(time_interval):
             break
 
         if time_counter == time_interval:
-            lock_screen_macos()
+            lock_screen(platform_name)
         time.sleep(1)
 
 
