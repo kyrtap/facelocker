@@ -34,7 +34,7 @@ def main(time_interval=10, demo_mode=False):
     cap = cv2.VideoCapture(0)
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-    time_counter = 0
+    face_detected_time = time.time()
     platform_name = platform.system()
 
     print('Looking for faces...'.format(time_interval))
@@ -42,14 +42,12 @@ def main(time_interval=10, demo_mode=False):
     while True:
         try:
             if face_recognized(cap, face_cascade, demo_mode):
-                time_counter = 0
-            else:
-                time_counter += 1
+                face_detected_time = time.time()
         except cv2.error:
             print('Failed to access camera. Did you grant permissions?')
             break
 
-        if time_counter == time_interval:
+        if time.time() - face_detected_time > time_interval:
             lock_screen(platform_name)
         time.sleep(1)
 
