@@ -28,7 +28,7 @@ def face_recognized(cap, face_cascade, demo_mode) -> bool:
     return len(faces) > 0
 
 
-def main(time_interval=10, demo_mode=False):
+def main(time_interval=10, refresh_rate=1, demo_mode=False):
     print('Starting Facelocker with interval of {} seconds...'.format(time_interval))
 
     cap = cv2.VideoCapture(0)
@@ -49,14 +49,17 @@ def main(time_interval=10, demo_mode=False):
 
         if time.time() - face_detected_time > time_interval:
             lock_screen(platform_name)
-        time.sleep(1)
+        time.sleep(refresh_rate)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('interval', nargs='?', default=10, type=int, help='Time interval to lock after')
+
+    parser.add_argument('interval', nargs='?', default=10, type=int, help='Time interval to lock after (Default: 10s)')
+    parser.add_argument('-r', '--refresh', dest='rate', default=1, type=float, help='Camera refresh rate in seconds (Default: 1s)')
     parser.add_argument('-d', '--demo', action='store_true', default=False,
                         help='Run in demo mode (show camera frames)')
+
     args = parser.parse_args()
 
-    main(args.interval, args.demo)
+    main(time_interval=args.interval, refresh_rate=args.rate, demo_mode=args.demo)
